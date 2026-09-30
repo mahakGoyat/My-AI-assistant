@@ -231,6 +231,17 @@ function setInput(value: string) {
     textarea.focus();
     textarea.setSelectionRange(value.length, value.length);
   }
+  syncComposer();
+}
+
+function syncComposer() {
+  const textarea = root.querySelector<HTMLTextAreaElement>('textarea');
+  const sendButton = root.querySelector<HTMLButtonElement>('[data-testid="button-send"]');
+  if (textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = `${Math.min(textarea.scrollHeight, 150)}px`;
+  }
+  if (sendButton) sendButton.disabled = !state.input.trim() || state.streaming;
 }
 
 async function sendMessage(value?: string, replaceLastUser = false) {
@@ -357,7 +368,9 @@ root.addEventListener('click', (event) => {
 
 root.addEventListener('input', (event) => {
   const textarea = event.target as HTMLTextAreaElement;
-  if (textarea.matches('textarea')) state.input = textarea.value;
+  if (!textarea.matches('textarea')) return;
+  state.input = textarea.value;
+  syncComposer();
 });
 
 root.addEventListener('keydown', (event) => {
