@@ -45,6 +45,16 @@ function isModelUnavailable(error: unknown): boolean {
   return candidate.status === 404 || candidate.code === "model_not_found";
 }
 
+function isRetryableProviderError(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false;
+  const status = (error as { status?: number }).status;
+  return status === 408 || status === 429 || (status !== undefined && status >= 500);
+}
+
+function wait(milliseconds: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
 router.post("/chat", async (req, res): Promise<void> => {
   if (isRateLimited(getClientKey(req))) {
     res.status(429).json({
@@ -97,16 +107,27 @@ router.post("/chat", async (req, res): Promise<void> => {
         max_tokens: 4096,
       });
 
+    const requestWithRetry = async (model: string) => {
+      try {
+        return await request(model);
+      } catch (error) {
+        if (!isRetryableProviderError(error)) throw error;
+        req.log.warn({ model }, "Transient Groq failure; retrying once");
+        await wait(500);
+        return request(model);
+      }
+    };
+
     let stream;
     try {
-      stream = await request(MODEL);
+      stream = await requestWithRetry(MODEL);
     } catch (error) {
       if (!isModelUnavailable(error)) throw error;
       req.log.warn(
         { requestedModel: MODEL, fallbackModel: COMPATIBILITY_MODEL },
         "Requested Groq model is unavailable; using compatibility model",
       );
-      stream = await request(COMPATIBILITY_MODEL);
+      stream = await requestWithRetry(COMPATIBILITY_MODEL);
     }
 
     for await (const chunk of stream) {

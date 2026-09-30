@@ -244,6 +244,10 @@ function syncComposer() {
   if (sendButton) sendButton.disabled = !state.input.trim() || state.streaming;
 }
 
+function wait(milliseconds: number) {
+  return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+}
+
 async function sendMessage(value?: string, replaceLastUser = false) {
   const content = (value ?? state.input).trim();
   if (!content || state.streaming) return;
@@ -257,14 +261,20 @@ async function sendMessage(value?: string, replaceLastUser = false) {
   state.messages = [...outgoing, { role: 'assistant', content: '' }];
   render();
 
-  activeController = new AbortController();
+  const controller = new AbortController();
+  activeController = controller;
   try {
-    const response = await fetch('/api/chat', {
+    const request = () => fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' },
       body: JSON.stringify({ messages: outgoing }),
-      signal: activeController.signal,
+      signal: controller.signal,
     });
+    let response = await request();
+    if ([502, 503, 504].includes(response.status) && !controller.signal.aborted) {
+      await wait(700);
+      response = await request();
+    }
     if (!response.ok) {
       let detail = '';
       try {
