@@ -1,6 +1,6 @@
-# [Project name]
+# My AI Assistant
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+My AI Assistant is a responsive, browser-persisted chatbot powered by streamed Groq responses.
 
 ## Run & Operate
 
@@ -9,7 +9,7 @@ _Replace the heading above with the project's name, and this line with one sente
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- Required secret: `GROQ_API_KEY` — used only by the API server
 
 ## Stack
 
@@ -22,23 +22,30 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/my-ai-assistant/src/main.ts` — vanilla browser UI, streaming client, localStorage, markdown rendering
+- `artifacts/my-ai-assistant/src/index.css` — responsive light/dark visual system
+- `artifacts/api-server/src/routes/chat.ts` — Groq streaming route, validation, system prompt, rate limiting
+- `lib/api-spec/openapi.yaml` — chat API contract
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- The frontend uses browser DOM APIs and fetch streaming rather than a UI framework.
+- Chat history is intentionally browser-local; no conversation content is stored on the server.
+- Groq is called only from Express so `GROQ_API_KEY` never reaches the client.
+- The API sends Server-Sent Event frames over a regular POST response to support incremental rendering.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+Users can ask general knowledge, coding, study, career, and writing questions, switch themes, start fresh chats, revisit browser-local history, and copy generated code.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Keep the frontend clean HTML/CSS/JavaScript without a heavy UI framework.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Add `GROQ_API_KEY` before starting the API workflow.
+- The rate limiter is in-memory and resets when the API process restarts.
 
 ## Pointers
 

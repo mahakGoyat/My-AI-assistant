@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "My AI Assistant"
+description = "A responsive AI chat assistant with streamed Groq responses, browser-persisted conversations, markdown rendering, and light/dark themes."
+version = "1.0.0"
+id = "artifacts/my-ai-assistant"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19618
+
+[services.development]
+run = "pnpm --filter @workspace/my-ai-assistant run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/my-ai-assistant", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/my-ai-assistant/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19618"
+BASE_PATH = "/"

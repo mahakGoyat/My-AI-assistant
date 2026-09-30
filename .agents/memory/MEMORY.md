@@ -1,0 +1,1 @@
+- [Groq model availability](groq-model-availability.md) — keep the requested model primary, but allow a documented compatibility fallback when the key lacks access.
