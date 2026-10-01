@@ -64,3 +64,9 @@ pnpm --filter @workspace/my-ai-assistant run build
 ## Deployment
 
 Publish the Replit project after adding `GROQ_API_KEY` to the production Secrets environment. The frontend is built as static assets, while the managed API server runs the Express backend.
+
+### Vercel multi-service deployment
+
+The root `vercel.json` configures three services: `my-ai-assistant` is public at `/`, `api-server` is public through `/api/*`, and `mockup-sandbox` remains internal. The browser calls `/api/chat` on the shared domain, so no server-side service binding is needed.
+
+Add `GROQ_API_KEY` to the Vercel project's environment variables for the API service. Run `vercel dev` from the repository root to test all configured services locally.
