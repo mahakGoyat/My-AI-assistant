@@ -1,2 +1,3 @@
 - [Groq model availability](groq-model-availability.md) — keep the requested model primary, but allow a documented compatibility fallback when the key lacks access.
 - [Vercel CLI package firewall](vercel-cli-package-firewall.md) — Vercel CLI local testing may be blocked when a transitive npm package is denied by Replit's package firewall.
+- [Vercel API bundle](vercel-api-bundle.md) — keep the Express service entrypoint self-contained; verify Vercel health after each deployment.

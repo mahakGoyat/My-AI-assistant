@@ -4,7 +4,8 @@
     "api-server": {
       "root": "artifacts/api-server",
       "framework": "express",
-      "entrypoint": "src/app.ts"
+      "buildCommand": "pnpm run build",
+      "entrypoint": "dist/app.mjs"
     },
     "mockup-sandbox": {
       "root": "artifacts/mockup-sandbox",
