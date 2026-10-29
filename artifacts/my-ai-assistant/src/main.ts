@@ -222,7 +222,7 @@ function renderMessages() {
       ${message.role === 'user' ? `<div class="message-avatar" aria-hidden="true">${avatar}</div>` : ''}
     </article>`;
   }).join('');
-  return `<section class="messages" aria-live="polite">${messages}<div data-scroll-anchor="true"></div></section>`;
+  return `<section class="messages" aria-live="polite">${messages}</section>`;
 }
 
 function render(focusComposerAfterRender = false) {
@@ -253,7 +253,7 @@ function render(focusComposerAfterRender = false) {
     textarea.setSelectionRange(selection, selection);
   }
   if (state.messages.length) {
-    root.querySelector('[data-scroll-anchor="true"]')?.scrollIntoView({
+    root.querySelector('.conversation')?.scrollIntoView({
       behavior: state.streaming ? 'auto' : 'smooth',
       block: 'end',
     });
