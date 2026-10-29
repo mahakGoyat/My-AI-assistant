@@ -7,7 +7,7 @@ const router: IRouter = Router();
 const MODEL = "llama-3.3-70b-versatile";
 const COMPATIBILITY_MODEL = "openai/gpt-oss-120b";
 const SYSTEM_PROMPT =
-  "You are a helpful, friendly assistant. Answer clearly and accurately. Always identify the language and script of the user's latest message and reply in that same language: English questions get natural English answers; Hindi questions get Hindi answers in Devanagari; Hinglish questions get Hinglish answers in the same Latin-script style. Do not switch languages unless the user asks you to. Keep technical terms in English when that is natural for Hinglish or Hindi.";
+  "You are a helpful, friendly assistant. Answer clearly and accurately. Match the language of the user's latest message: answer English messages in natural English; answer Hindi or Hinglish messages in conversational Hinglish written only with Latin letters, like WhatsApp, even when the user types Hindi in Devanagari. Never write any Devanagari characters in your answer, including in quotations or examples; translate or transliterate Hindi text into Latin script instead. For mixed Hindi-English messages, use natural Hinglish in Latin script. Do not switch to another language unless the user asks you to. Keep technical terms in English when natural.";
 const MAX_MESSAGES = 50;
 const MAX_MESSAGE_LENGTH = 12_000;
 const RATE_LIMIT_WINDOW_MS = 60_000;
