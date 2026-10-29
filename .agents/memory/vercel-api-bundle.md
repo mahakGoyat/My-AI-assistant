@@ -1,10 +1,10 @@
 ---
-name: Vercel API bundle
-description: Deployment-specific guidance for the Express API in this Vercel multi-service workspace.
+name: Vercel API entrypoint
+description: Deployment-specific guidance for the Express API entrypoint in this Vercel multi-service workspace.
 ---
 
-Keep the Vercel API service pointed at a generated, self-contained Express bundle, and keep its build command and entrypoint aligned.
+Point the Vercel API service entrypoint at a committed Express source file relative to the service root, such as `src/app.ts`, and ensure it default-exports the app. Do not point the service at a generated `dist/*` file: Vercel checks that the entrypoint exists before running `buildCommand`.
 
-**Why:** The live service returned `FUNCTION_INVOCATION_FAILED` even on its health endpoint. A locally built bundle imported and served health successfully; the external runtime stack was not available here, so bundling is a mitigation, not a confirmed diagnosis.
+**Why:** A Vercel deployment failed with `ENTRYPOINT_NOT_FOUND` because the configured `dist/app.mjs` was only created by `buildCommand`, after Vercel had already validated the entrypoint. Vercel's Express framework supports a default-exported `src/app.ts`.
 
-**How to apply:** Verify `/api/healthz` after redeploy. If Vercel still reports a function invocation failure, inspect its Runtime Logs before making further code changes.
+**How to apply:** Keep service root and entrypoint path aligned; verify the source path exists in the checked-in tree before deployment. After redeploy, check `/api/healthz`. If the build succeeds but runtime still reports `FUNCTION_INVOCATION_FAILED`, inspect Vercel Runtime Logs before further code changes.
