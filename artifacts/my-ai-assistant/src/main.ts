@@ -225,7 +225,7 @@ function renderMessages() {
   return `<section class="messages" aria-live="polite">${messages}<div data-scroll-anchor="true"></div></section>`;
 }
 
-function render() {
+function render(focusComposerAfterRender = false) {
   applyTheme();
   const currentTextarea = root.querySelector<HTMLTextAreaElement>('textarea');
   const restoreTextareaFocus = document.activeElement === currentTextarea;
@@ -247,9 +247,10 @@ function render() {
       <div class="composer-wrap"><form class="composer" data-chat-form><textarea ${state.streaming ? 'disabled' : ''} placeholder="Ask anything worth thinking through…" rows="1" aria-label="Message" data-testid="input-message">${escapeHtml(state.input)}</textarea><button class="send-button" type="submit" ${!state.input.trim() || state.streaming ? 'disabled' : ''} data-testid="button-send" aria-label="Send message">${icon('arrow')}</button></form><div class="composer-hint">${state.streaming ? 'Writing a considered response…' : 'Enter to send · Shift + Enter for a new line'}</div><span class="sr-only" aria-live="polite" data-testid="status-copy">${state.copied ? 'Copied code to clipboard' : ''}</span></div>
   </main>`;
   const textarea = root.querySelector<HTMLTextAreaElement>('textarea');
-  if (textarea && restoreTextareaFocus) {
+  if (textarea && (restoreTextareaFocus || focusComposerAfterRender)) {
     textarea.focus({ preventScroll: true });
-    textarea.setSelectionRange(textareaSelection, textareaSelection);
+    const selection = focusComposerAfterRender ? textarea.value.length : textareaSelection;
+    textarea.setSelectionRange(selection, selection);
   }
   if (state.messages.length) root.querySelector('[data-scroll-anchor="true"]')?.scrollIntoView({ behavior: 'smooth', block: 'end' });
 }
@@ -354,7 +355,7 @@ async function sendMessage(value?: string, replaceLastUser = false) {
     state.streaming = false;
     activeController = null;
     persistCurrent();
-    render();
+    render(true);
   }
 }
 
