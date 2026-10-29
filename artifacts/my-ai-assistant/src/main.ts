@@ -252,7 +252,12 @@ function render(focusComposerAfterRender = false) {
     const selection = focusComposerAfterRender ? textarea.value.length : textareaSelection;
     textarea.setSelectionRange(selection, selection);
   }
-  if (state.messages.length) root.querySelector('[data-scroll-anchor="true"]')?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  if (state.messages.length) {
+    root.querySelector('[data-scroll-anchor="true"]')?.scrollIntoView({
+      behavior: state.streaming ? 'auto' : 'smooth',
+      block: 'end',
+    });
+  }
 }
 
 function setInput(value: string) {
