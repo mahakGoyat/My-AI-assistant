@@ -1,72 +1,79 @@
 # My AI Assistant
 
-My AI Assistant is a responsive, full-stack chatbot with a plain HTML/CSS/JavaScript frontend and an Express backend. It streams answers from Groq's `llama-3.3-70b-versatile` model and keeps the current browser's conversations in local storage. If a Groq key does not have access to that model, the server uses the available `openai/gpt-oss-120b` compatibility model so the app remains usable.
+A quiet place to think. A personal AI chat assistant that answers questions on learning, code, career and writing, and keeps your conversation history in your browser. No login and no database.
+
+**Live demo:** [my-ai-assistant-rho-eight.vercel.app](https://my-ai-assistant-rho-eight.vercel.app)
 
 ## Features
 
-- ChatGPT-style conversation UI with user and assistant messages
-- Streaming responses over `POST /api/chat`
-- Conversation context sent with every request
-- Hindi and Hinglish support through the assistant system prompt
-- Lightweight markdown rendering with fenced code blocks and Copy buttons
-- Local chat history, New Chat, retry, and light/dark mode
-- Responsive mobile layout with a history drawer
-- Server-side input validation and in-memory rate limiting
+- Ask questions and get AI answers, powered by the Groq API
+- Chat history is saved in your browser, so past conversations appear in the sidebar
+- Start a new chat at any time with the New chat button
+- Starter prompts for common tasks: understand an idea, build a project, make a study plan, improve your writing
+- Press Enter to send and Shift + Enter for a new line
+- No account needed
 
-## Local setup
+## Tech Stack
 
-1. Install Node.js 20+ and pnpm.
-2. Install workspace dependencies:
+| Part | Tools |
+| --- | --- |
+| Frontend | React, TypeScript, Vite, Tailwind CSS, TanStack Query, Framer Motion, shadcn/ui (Radix UI) |
+| Backend | Node.js, Express 5, Groq SDK, Pino |
+| API layer | OpenAPI spec with generated Zod schemas and React client |
+| Tooling | pnpm workspaces, esbuild |
+| Hosting | Vercel |
+| Built with | Replit |
 
-   ```bash
-   pnpm install
-   ```
+## Project Structure
 
-3. Add `GROQ_API_KEY` to Replit Secrets (or your local environment). The key is read only by the Express API server and is never sent to the browser.
-4. Start the API server:
-
-   ```bash
-   pnpm --filter @workspace/api-server run dev
-   ```
-
-5. In a second terminal, start the frontend:
-
-   ```bash
-   pnpm --filter @workspace/my-ai-assistant run dev
-   ```
-
-The Replit preview routes `/api/*` to the API server and `/` to the frontend automatically.
-
-## API
-
-`POST /api/chat`
-
-```json
-{
-  "messages": [
-    { "role": "user", "content": "Explain closures in JavaScript." }
-  ]
-}
+```
+My-AI-assistant/
+├── artifacts/
+│   ├── my-ai-assistant/   # React frontend
+│   └── api-server/        # Express backend (Groq)
+├── lib/
+│   ├── api-spec/          # OpenAPI specification
+│   ├── api-zod/           # Generated Zod schemas
+│   └── api-client-react/  # Generated React API client
+└── scripts/
 ```
 
-The response uses `text/event-stream`. Each event contains a JSON object such as `{ "content": "next text chunk" }`; the stream ends with `data: [DONE]`.
+## Getting Started
 
-The server accepts up to 50 messages per request and limits each message to 12,000 characters. It allows 20 requests per minute per client IP in the in-memory limiter.
-
-## Verification
+You need Node.js and [pnpm](https://pnpm.io) installed, and a free API key from [Groq](https://console.groq.com).
 
 ```bash
-pnpm --filter @workspace/api-server run typecheck
-pnpm --filter @workspace/my-ai-assistant run typecheck
-pnpm --filter @workspace/my-ai-assistant run build
+git clone https://github.com/mahakGoyat/My-AI-assistant.git
+cd My-AI-assistant
+pnpm install
 ```
+
+Create a `.env` file for the backend:
+
+```
+GROQ_API_KEY=your_groq_api_key
+```
+
+Start the backend and the frontend in two terminals:
+
+```bash
+pnpm --filter @workspace/api-server run dev
+pnpm --filter @workspace/my-ai-assistant run dev
+```
+
+## Environment Variables
+
+| Variable | Used by | Description |
+| --- | --- | --- |
+| `GROQ_API_KEY` | Backend | API key from console.groq.com |
+
+Never commit your real API key. Add it as an environment variable in your hosting dashboard (for example, Vercel).
 
 ## Deployment
 
-Publish the Replit project after adding `GROQ_API_KEY` to the production Secrets environment. The frontend is built as static assets, while the managed API server runs the Express backend.
+The app is deployed on Vercel. Add `GROQ_API_KEY` under Project Settings, Environment Variables, then redeploy.
 
-### Vercel multi-service deployment
+## Author
 
-The root `vercel.json` configures three services: `my-ai-assistant` is public at `/`, `api-server` is public through `/api/*`, and `mockup-sandbox` remains internal. The browser calls `/api/chat` on the shared domain, so no server-side service binding is needed.
-
-Add `GROQ_API_KEY` to the Vercel project's environment variables for the API service. Run `vercel dev` from the repository root to test all configured services locally.
+Built by **Mahak Goyat**
+[GitHub](https://github.com/mahakGoyat) · [LinkedIn](https://www.linkedin.com/in/mahak-goyat)
