@@ -4,6 +4,8 @@ A quiet place to think. A personal AI chat assistant that answers questions on l
 
 **Live demo:** [my-ai-assistant-rho-eight.vercel.app](https://my-ai-assistant-rho-eight.vercel.app)
 
+<img width="1366" height="768" alt="My AI assistant" src="https://github.com/user-attachments/assets/0353f553-946d-45f8-9f77-7df3f460e623" />
+
 ## Features
 
 - Ask questions and get AI answers, powered by the Groq API
